@@ -1,4 +1,12 @@
-import { Application } from "pixi.js";
+import { Application, Graphics} from "pixi.js";
+
+class Electron extends Graphics {
+    constructor() {
+        // super(  whatever the class needs  )
+
+
+    }
+}
 
 (async () => {
     const app = new Application();
@@ -7,6 +15,12 @@ import { Application } from "pixi.js";
         resizeTo: window,
         background: 0x00aaff
     });
+
+
+
+    const electron = new Electron();
+
+
 
     document.body.appendChild(app.canvas);
 })();

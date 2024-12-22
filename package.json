@@ -10,7 +10,6 @@
     "type": "git",
     "url": "git+https://github.com/Hjalram/SimulatingElektricity.git"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -18,9 +17,7 @@
   },
   "homepage": "https://github.com/Hjalram/SimulatingElektricity#readme",
   "dependencies": {
-    "pixi.js": "^8.6.6"
-  },
-  "devDependencies": {
-    "vite": "^6.0.4"
+    "pixi.js": "^8.6.6",
+    "vite": "^6.0.5"
   }
 }
