@@ -1,16 +1,5 @@
 import { Application, Graphics } from "pixi.js";
 
-class Vector {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    getLength() {
-        return Math.sqrt(this.x*this.x + this.y*this.y);
-    }
-}
-
 function subtractVectors(vec1, vec2) {
     let result = new Vector();
 
@@ -35,6 +24,98 @@ function distanceBetweenVectors(vec1, vec2) {
     const yDistance = Math.abs(vec1.y - vec2.y);
 
     return Math.sqrt(xDistance*xDistance + yDistance*yDistance);
+}
+
+class Vector {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+
+        this.debugPoint = new Graphics()
+            .circle(0, 0, 4)
+            .fill(0x000000);
+    }
+
+    getLength() {
+        return Math.sqrt(this.x*this.x + this.y*this.y);
+    }
+
+    showDebugPoint(app) {
+
+
+        app.stage.addChild(this.debugPoint);
+    }
+
+    updateGraphics() {
+        this.debugPoint.x = this.x;
+        this.debugPoint.y = this.y;
+    }
+}
+
+class Battery {
+    constructor(app) {
+        this.voltage = 2;
+
+        this.position = new Vector(400, 400);
+        this.size = new Vector(200, 100);
+
+        this.negPoint = new Vector(this.position.x, this.position.y + this.size.y/2);
+        this.posPoint = new Vector(this.position.x + this.size.x, this.position.y + this.size.y/2);
+
+        this.graphicsRect = new Graphics()
+            .rect(0, 0, this.size.x, this.size.y)
+            .fill(0xAAAAAA);
+
+        app.stage.addChild(this.graphicsRect);
+
+        this.negPoint.showDebugPoint(app);
+        this.posPoint.showDebugPoint(app);
+
+        this.electrons = [
+            new Electron(app),
+            new Electron(app),
+            new Electron(app),
+            new Electron(app),
+            new Electron(app)
+        ];
+
+        for (let i = 0; i < this.electrons.length; i++) { // Moves the electrons based on battery position
+            const elektron = this.electrons[i];
+
+            elektron.position.x = this.position.x + this.size.x / 4;
+            elektron.position.y = this.position.y + this.size.y / 2;
+        }
+    }c
+
+    isCircuit(cables) { // Returns true if the battery is connected in i circuit
+
+    }
+
+    updatePosition() {
+        this.negPoint.x = this.position.x; 
+        this.negPoint.y = this.position.y + this.size.y/2;
+
+        this.posPoint.x = this.position.x + this.size.x;
+        this.posPoint.y = this.position.y + this.size.y/2;
+
+        this.electrons.forEach(electron => {
+            electron.position.x = this.position.x;
+            electron.position.y = this.position.y;
+        }); 
+        
+
+        // Update the positions of the graphics
+        this.negPoint.updateGraphics();
+        this.posPoint.updateGraphics();
+
+        this.graphicsRect.x = this.position.x;
+        this.graphicsRect.y = this.position.y;
+
+        this.electrons.forEach(electron => {
+            electron.graphics.x = electron.position.x;
+            electron.graphics.y = electron.position.y;
+        });  
+    }
 }
 
 class Electron {
@@ -78,7 +159,7 @@ class Cable {
         this.debugLine = new Graphics();
         this.debugLine.moveTo(this.start.x, this.start.y);
         this.debugLine.lineTo(this.end.x, this.end.y);
-        this.debugLine.stroke({color: 0x000000, pixelLine: true});
+        this.debugLine.stroke({color: 0xffffff, pixelLine: true});
 
         app.stage.addChild(this.debugLine);
     }
@@ -93,15 +174,26 @@ class Cable {
     });
 
 
-    const cable = new Cable(app, new Vector(100, 100), new Vector(400, 200));
-    const cable1 = new Cable(app, new Vector(400, 210), new Vector(200, 700));
+    const battery = new Battery(app);
+
+    battery.position.x = 400;
+    battery.position.y = 600;
+
+    const cables = [
+        new Cable(app, new Vector(400, 600), new Vector(300, 300)),
+        new Cable(app, new Vector(300, 300), new Vector(700, 300)),
+        new Cable(app, new Vector(700, 300), new Vector(600, 600)),
+    ];
 
     const electron = new Electron(app);
 
     app.ticker.add((time) => {
 
-        electron.followCable(cable, time);
+        cables.forEach(cable => {
+        }); 
+
         electron.updateGraphics();
+        battery.updatePosition();
 
     });
     

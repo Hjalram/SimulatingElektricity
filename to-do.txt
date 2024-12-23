@@ -1,0 +1,19 @@
+TO-DO:
+
+* The battery voltage should decide how much the electrons are willing to jump
+
+* Make a breadboard structure out of cables
+
+* Allow the user to place and remove cables
+
+* Diodes
+
+
+
+DOING:
+
+* Some kind of algorithm that checks if there is a circuit
+
+
+DONE:
+
