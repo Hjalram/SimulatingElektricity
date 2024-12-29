@@ -36,13 +36,37 @@ class Vector {
             .fill(0x000000);
     }
 
+    isConnected(cables) {
+        let connections = [];
+
+        cables.forEach(cable => {
+            let thisVector = new Vector(this.x, this.y);
+
+            if (distanceBetweenVectors(thisVector, cable.start) < 0.1) {
+                connections.push({
+                    cable: cable,
+                    vector: cable.start,
+                    type: "start"
+                });
+            }
+            
+            if (distanceBetweenVectors(thisVector, cable.end) < 0.1) {
+                connections.push({
+                    cable: cable,
+                    vector: cable.end,
+                    type: "end"
+                });
+            }
+        });
+
+        return connections;
+    }
+
     getLength() {
         return Math.sqrt(this.x*this.x + this.y*this.y);
     }
 
     showDebugPoint(app) {
-
-
         app.stage.addChild(this.debugPoint);
     }
 
@@ -85,9 +109,9 @@ class Battery {
             elektron.position.x = this.position.x + this.size.x / 4;
             elektron.position.y = this.position.y + this.size.y / 2;
         }
-    }c
+    }
 
-    isCircuit(cables) { // Returns true if the battery is connected in i circuit
+    isCircuit(cables) { // Returns true if the battery is connected in a circuit
 
     }
 
@@ -117,6 +141,55 @@ class Battery {
         });  
     }
 }
+
+class CircuitFinder { // An electron like thing whose job is to search for circuits
+    constructor(app, battery) {
+        this.startPos = battery.negPoint;
+        this.endPos = battery.posPoint;
+        this.position = new Vector(this.startPos.x, this.startPos.y);
+        this.position.showDebugPoint(app);
+    }
+
+    search(cables) {
+        for (let i = 0; i < 50; i++) {
+
+            if (distanceBetweenVectors(this.position, this.endPos) > 0.1) {
+
+                const connections = this.position.isConnected(cables);
+    
+                if (connections.length > 0) {
+                    // Calulating connections of type "start"
+                    let startConnections = [];
+                    connections.forEach(connection => {
+                        if (connection.type == "start") {
+                            startConnections.push(connection);
+                        }
+                    });
+    
+                    if (startConnections.length > 0) {
+                        this.position.x = startConnections[0].cable.end.x;
+                        this.position.y = startConnections[0].cable.end.y;
+                    }
+                }
+    
+                console.log(connections);
+                console.log(this.position);
+                console.log("");
+                console.log("");
+
+            }
+            else {
+                console.log("Circuit");
+            }
+
+
+        }
+    }
+
+    updateGraphics() {
+        this.position.updateGraphics();
+    }
+} 
 
 class Electron {
     constructor(app) {
@@ -175,26 +248,30 @@ class Cable {
 
 
     const battery = new Battery(app);
-
     battery.position.x = 400;
     battery.position.y = 600;
+    battery.updatePosition();
+
+    const finder = new CircuitFinder(app, battery);
+
+    
 
     const cables = [
-        new Cable(app, new Vector(400, 600), new Vector(300, 300)),
+        new Cable(app, new Vector(battery.negPoint.x, battery.negPoint.y), new Vector(300, 300)),
         new Cable(app, new Vector(300, 300), new Vector(700, 300)),
-        new Cable(app, new Vector(700, 300), new Vector(600, 600)),
+        new Cable(app, new Vector(700, 300), new Vector(battery.posPoint.x, battery.posPoint.y)),
     ];
 
-    const electron = new Electron(app);
+    finder.search(cables);
 
     app.ticker.add((time) => {
 
         cables.forEach(cable => {
         }); 
 
-        electron.updateGraphics();
         battery.updatePosition();
 
+        finder.updateGraphics();
     });
     
 
