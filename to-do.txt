@@ -14,6 +14,9 @@ DOING:
 
 * Some kind of algorithm that checks if there is a circuit
 
+ignore current cable
+
+
 
 DONE:
 
